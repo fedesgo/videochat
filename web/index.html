@@ -88,8 +88,7 @@
         resourceId:"salaPrueba", // Room name
         onSuccess: function(){
           alert("Bienvenido");
-              $("#joinLeaveButton").removeClass("callStart");
-              $("#joinLeaveButton").addClass("callEnd");
+              $("#joinLeaveButton").removeClass("callStart").addClass("callEnd");
         },
         onFailure: function(reason){
           alert("Hasta luego");
