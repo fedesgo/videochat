@@ -1,0 +1,107 @@
+<html>
+<head>
+  <title>Cliente Servidor</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+      <style>
+      .flashhook {
+        width: 60px;
+        height: 36px;
+        background-size: 32px auto;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-color: transparent;
+        border: 0;
+        margin-bottom: 10px;
+        padding-top: 10px;
+      }
+      .callStart {
+        background-image: url(https://static.vidyo.io/4.1.20.3/connector/Images/callStart.png);
+      }
+      .callEnd {
+        background-image: url(https://static.vidyo.io/4.1.20.3/connector/Images/callEnd.png);
+      }
+      .form-group {
+        min-height: 400px;
+      }
+    </style>
+</head>
+<body background="fondo.jpg">
+  <h3 align="center">Videochat Cliente Servidor</h3>
+  <div class="container">
+    <div class="row">
+      <div class="text-center col-md-3">
+        <form>
+          <div class="form-group">          
+            <label class="mr-sm-2">Su apodo:</label>
+            <input name="displayName" class="form-control mb-2 mr-sm-2 mb-sm-0" type="text" maxlength="512" placeholder="Display Name" value="Usuario" id="displayName" />
+            <div id="loadjoinmessage" class="hidden">
+              <h6>Pulsa para entrar en la videoconferencia.</h6>
+              <button id="joinLeaveButton" title="Join Conference" class="flashhook callStart" onclick="joinCall()"></button>
+            </div>
+          </div>
+        </form>
+        <!--Simple invite a friend to join room button-->
+        
+      </div>
+      <div class="text-center col-md-9">
+        <div id="loadmessage">
+          <h6>Por favor cargue su cámara y micrófono si su navegador lo solicita</h6>
+        </div>
+      <div id="renderer"> </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  var vidyoConnector;
+
+   // Callback method when VidyoIO is done loading (pointer to this method is passed in the onload parameter while including the
+   // VidyoClient.js file)
+    function onVidyoClientLoaded(status) {
+      console.log("VidyoClient load state - " + status.state);
+      if (status.state == "READY") {
+        VC.CreateVidyoConnector({
+          viewId:"renderer", // Div ID where the composited video will be rendered, see VidyoConnector.html;
+          viewStyle:"VIDYO_CONNECTORVIEWSTYLE_Default", // Visual style of the composited renderer
+          remoteParticipants:10, // Maximum number of participants to render
+          logFileFilter:"error",
+          logFileName:"",
+          userData:""
+        }).then(function (vc) {
+          console.log("Create success");
+          vidyoConnector = vc;
+        }).catch(function(error){
+
+        });
+      }
+    }
+
+    function joinCall(){
+      var tok = "cHJvdmlzaW9uAGZlZGVyaWNvQGQxYmU1NS52aWR5by5pbwA2MzY5NTY2NzE3NwAAYTg1ZTg4MjBhYzBhZWIyNDczYWMzMzFkMDU3MmQ0MTY0OWZmNGM1ZjczMGFjNTJkYmNiZWYxMDUwNzVhMjczMDhhMDNiYzZkMmEwYjkyMGM0YjA0MGVjMWFkNzA3Zjdh";
+      var nick = document.getElementById("displayName").value;
+      // To join a video conference call Connect method
+      vidyoConnector.Connect({
+        host:"prod.vidyo.io",  // Server name, for most production apps it will be prod.vidyo.io
+        token:tok,          // Add generated token (https://developer.vidyo.io/documentation/4-1-16-8/getting-started#Tokens)
+        displayName:nick,  // Display name
+        resourceId:"salaPrueba", // Room name
+        onSuccess: function(){
+          alert("Bienvenido");
+              $("#joinLeaveButton").removeClass("callStart");
+              $("#joinLeaveButton").addClass("callEnd")
+        },
+        onFailure: function(reason){
+          alert("Hasta luego");
+        },
+        onDisconnected: function(reason) {
+          console.log(" Desconectado - " + reason);
+        }
+      })
+    }
+  </script>
+  <!-- // Including the Vidyo.io package by adding the javascript path.-->
+  <script src="https://static.vidyo.io/latest/javascript/VidyoClient/VidyoClient.js?onload=onVidyoClientLoaded"></script>
+ <!-- Div where the video conference will be rendered -->
+</body>
+</html>
